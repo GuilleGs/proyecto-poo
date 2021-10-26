@@ -3,8 +3,8 @@ package aplicacion.controllers.cli;
 import aplicacion.models.Alumno;
 import aplicacion.models.Curso;
 import aplicacion.views.cli.AsistenciaViewCli;
-import aplicacion.views.cli.MenuCLI;
-import aplicacion.views.cli.UtilsCLI;
+import aplicacion.views.cli.menus.MenuCLI;
+import utils.UtilsCLI;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -40,7 +40,7 @@ public class AsistenciaControllerCLI {
      */
     public Alumno getAlumnoRequerido(int value){
         Alumno alumnoReq = null;
-        List<Curso> cursos = this.menuCLI.getCursoData().getCursos();
+        List<Curso> cursos = this.menuCLI.getCursoData().getAll().get();
 
         for (Curso curso: cursos) {
             for (Alumno alumno: curso.getAlumnos().values()) {
@@ -63,7 +63,7 @@ public class AsistenciaControllerCLI {
      * @return HashMap con los alumnos seleccionados
      */
     public Map<String, Alumno> getEntrePorcentajes(int percent1, int percent2, int value){
-        List<Curso> cursos = this.menuCLI.getCursoData().getCursos();
+        List<Curso> cursos = this.menuCLI.getCursoData().getAll().get();
         Map<String, Alumno> alumnos = new HashMap<>();
         int alumnoReq = -1;
 

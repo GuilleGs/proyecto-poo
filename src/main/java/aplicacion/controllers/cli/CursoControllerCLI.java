@@ -1,13 +1,13 @@
 package aplicacion.controllers.cli;
 
-import aplicacion.data.datafile.Datafile;
+import utils.models.df.DataFile;
 import aplicacion.models.Alumno;
 import aplicacion.models.Curso;
-import aplicacion.models.IDCurso;
+import aplicacion.models.id.IDCurso;
 import aplicacion.models.Profesor;
 import aplicacion.views.cli.CursoViewCLI;
-import aplicacion.views.cli.MenuCLI;
-import aplicacion.views.cli.UtilsCLI;
+import aplicacion.views.cli.menus.MenuCLI;
+import utils.UtilsCLI;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,8 +40,8 @@ public class CursoControllerCLI {
      * @param id   ID del reporte
      * @return Datafile con el reporte correspondiente.
      */
-    private Datafile generarReporte(String tipo, String id) {
-        return new Datafile("reportes/" + tipo + "-" + id);
+    private DataFile generarReporte(String tipo, String id) {
+        return new DataFile("reportes/" + tipo + "-" + id);
     }
 
     /**
@@ -131,9 +131,9 @@ public class CursoControllerCLI {
      * @return String con la ruta del archivo generado.
      */
     public String generarReporteListaCurso(short nivel, char paralelo) {
-        Datafile reporteListaCurso = generarReporte("lista-curso", (nivel + "-" + paralelo));
-        reporteListaCurso.insertLine(Datafile.listToCSV(Arrays.asList(UtilsCLI.headers.get("alumnos"))));
-        Map<String, Alumno> alumnos = this.menuCLI.getCursoData().getCurso(nivel, paralelo).getAlumnos();
+        DataFile reporteListaCurso = generarReporte("lista-curso", (nivel + "-" + paralelo));
+        reporteListaCurso.insertLine(DataFile.listToCSV(Arrays.asList(UtilsCLI.headers.get("alumnos"))));
+        Map<String, Alumno> alumnos = this.menuCLI.getCursoData().get(new IDCurso(nivel, paralelo)).getAlumnos();
         List<String> line = new ArrayList<>();
         for (Alumno alumno : alumnos.values()) {
             line.add(alumno.getRut());
@@ -142,7 +142,7 @@ public class CursoControllerCLI {
             line.add(alumno.getNombres());
             line.add(alumno.getApoderado().getNombreCompleto());
             line.add(Integer.toString(alumno.getApoderado().getTelefono()));
-            reporteListaCurso.insertLine(Datafile.listToCSV(line));
+            reporteListaCurso.insertLine(DataFile.listToCSV(line));
             line.clear();
         }
         return reporteListaCurso.getFilePath();
@@ -155,10 +155,10 @@ public class CursoControllerCLI {
      * @return String con la ruta del archivo generado.
      */
     public String generarReporteTablaCursos() {
-        Datafile reporteTablaCursos = generarReporte("tabla-cursos",
+        DataFile reporteTablaCursos = generarReporte("tabla-cursos",
                 Integer.toString((int) Math.floor(Math.random() * (9000) + 1000)));
-        reporteTablaCursos.insertLine(Datafile.listToCSV(Arrays.asList(UtilsCLI.headers.get("cursos"))));
-        List<Curso> cursos = this.menuCLI.getCursoData().getCursos();
+        reporteTablaCursos.insertLine(DataFile.listToCSV(Arrays.asList(UtilsCLI.headers.get("cursos"))));
+        List<Curso> cursos = this.menuCLI.getCursoData().getAll().get();
         List<String> line = new ArrayList<>();
         for (Curso curso : cursos) {
             line.add(curso.toShortStr());
@@ -167,34 +167,31 @@ public class CursoControllerCLI {
             line.add(curso.getProfesorJefe().getNombreCompleto());
             line.add(curso.getProfesorJefe().getEmail());
             line.add(Integer.toString(curso.getProfesorJefe().getTelefono()));
-            reporteTablaCursos.insertLine(Datafile.listToCSV(line));
+            reporteTablaCursos.insertLine(DataFile.listToCSV(line));
             line.clear();
         }
         return reporteTablaCursos.getFilePath();
     }
 
     public void agregarCurso() throws IOException {
-        this.menuCLI.getCursoData().insertCurso(this.obtenerDatosCurso());
-        CursoViewCLI.mostrarTablaCursos(this.menuCLI.getCursoData().getCursos());
+        this.menuCLI.getCursoData().insert(this.obtenerDatosCurso());
+        CursoViewCLI.mostrarTablaCursos(this.menuCLI.getCursoData().getAll().get());
     }
 
     public void mostrarCursos() {
-        CursoViewCLI.mostrarTablaCursos(this.menuCLI.getCursoData().getCursos());
+        CursoViewCLI.mostrarTablaCursos(this.menuCLI.getCursoData().getAll().get());
     }
 
     public void asignarNuevoProfesorJefeACurso() throws IOException {
         IDCurso idCurso;
         Curso curso, cursoActualizado;
         idCurso = this.obtenerIDCurso();
-        curso = this.menuCLI.getCursoData().getCurso(idCurso.nivel, idCurso.paralelo);
+        curso = this.menuCLI.getCursoData().get(idCurso);
         System.out.println("Cambiando profesor jefe del " + curso.cursoToString());
         cursoActualizado = this.obtenerDatosCurso(curso);
-        if (this.menuCLI.getCursoData().updateCurso(cursoActualizado)) {
-            this.menuCLI.getProfesorData().insertProfesor(cursoActualizado.getProfesorJefe());
-            this.menuCLI.getProfesorData().deleteProfesor(curso.getProfesorJefe());
-            System.out.println("El curso ha sido actualizado exitosamente");
-        } else
-            System.out.println("Ha ocurrido un error, por favor intente nuevamente.");
+        this.menuCLI.getCursoData().update(cursoActualizado, null);
+        this.menuCLI.getProfesorData().insert(cursoActualizado.getProfesorJefe());
+        this.menuCLI.getProfesorData().delete(curso.getProfesorJefe());
     }
 
     public void eliminarCurso() throws IOException {
@@ -202,12 +199,9 @@ public class CursoControllerCLI {
         Curso curso;
 
         idCurso = obtenerIDCurso();
-        curso = this.menuCLI.getCursoData().getCurso(idCurso.nivel, idCurso.paralelo);
+        curso = this.menuCLI.getCursoData().get(idCurso);
         System.out.println("Eliminando curso " + curso.cursoToString());
-        if (this.menuCLI.getCursoData().deleteCurso(curso))
-            System.out.println("El curso ha sido eliminado exitosamente");
-        else
-            System.out.println("Ha ocurrido un error, por favor intente nuevamente.");
+        this.menuCLI.getCursoData().delete(curso);
     }
 
     public void verDatosCurso() throws IOException {
@@ -215,7 +209,7 @@ public class CursoControllerCLI {
         Curso curso;
 
         idCurso = obtenerIDCurso();
-        curso = this.menuCLI.getCursoData().getCurso(idCurso);
+        curso = this.menuCLI.getCursoData().get(idCurso);
         if (curso != null)
             UtilsCLI.imprimirCurso(curso);
         else

@@ -1,4 +1,4 @@
-package aplicacion.models;
+package aplicacion.models.id;
 
 public class IDCurso {
     public short nivel;

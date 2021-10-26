@@ -1,4 +1,4 @@
-package aplicacion.data.database;
+package utils.models.db;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -15,19 +15,21 @@ import java.sql.ResultSet;
  * @author Sebastián García, Guillermo González, Benjamín Navarrete
  * @version 2.0
  */
-public class DBConnection {
+public class MySQLConnection {
 
-    public static final Dotenv dotenv = Dotenv.load();
-    public static final Connection connection = connect();
+    private static final Dotenv dotenv = Dotenv.load();
+    private static boolean connected = false;
+    private static final Connection connection = connect();
 
     /**
      * Método estático que realiza la conexión a la base de datos.
      *
      * @return La conexión, o null en caso de error.
      */
-    public static Connection connect() {
+    private static Connection connect() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+            connected = true;
             return DriverManager.getConnection(String.format("jdbc:mysql://%s:%s/%s",
                             dotenv.get("MYSQL_HOST"), dotenv.get("MYSQL_PORT"),
                             dotenv.get("MYSQL_DATABASE")),
@@ -66,6 +68,16 @@ public class DBConnection {
             System.out.println(e);
         }
         return 0;
+    }
+
+    public static boolean isConnected() {
+        try {
+            if (connection != null)
+                return !connection.isClosed();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
 }

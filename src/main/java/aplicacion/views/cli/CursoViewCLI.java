@@ -1,6 +1,7 @@
 package aplicacion.views.cli;
 
 import aplicacion.models.Curso;
+import utils.UtilsCLI;
 
 import java.util.List;
 

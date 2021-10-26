@@ -1,13 +1,15 @@
-package aplicacion.views.cli;
+package aplicacion.views.cli.menus;
 
 import aplicacion.controllers.cli.MenuControllerCLI;
-import aplicacion.data.AlumnoData;
-import aplicacion.data.ApoderadoData;
-import aplicacion.data.CursoData;
-import aplicacion.data.ProfesorData;
+import aplicacion.models.*;
+import aplicacion.models.dao.DAO;
+import aplicacion.models.dao.PersonaDAO;
+import aplicacion.models.id.IDCurso;
+import utils.UtilsCLI;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,69 +20,6 @@ import java.util.Map;
  * @version 2.0
  */
 public class MenuCLI {
-
-    private final BufferedReader lector;
-    private final MenuControllerCLI menuControllerCLI;
-
-    private final AlumnoData alumnoData;
-    private final ApoderadoData apoderadoData;
-    private final CursoData cursoData;
-    private final ProfesorData profesorData;
-
-    /**
-     * Objeto que controla los menús en la interfaz de linea de comandos.
-     *
-     * @param lector        BufferedReader lector de datos
-     * @param alumnoData    Origen de datos de los alumnos
-     * @param apoderadoData Origen de datos de los apoderados
-     * @param cursoData     Origen de datos de los cursos
-     * @param profesorData  Origen de datos de los profesores
-     */
-    public MenuCLI(BufferedReader lector, AlumnoData alumnoData, ApoderadoData apoderadoData, CursoData cursoData,
-                   ProfesorData profesorData) {
-        this.lector = lector;
-        this.menuControllerCLI = new MenuControllerCLI(this);
-        this.alumnoData = alumnoData;
-        this.apoderadoData = apoderadoData;
-        this.cursoData = cursoData;
-        this.profesorData = profesorData;
-    }
-
-    /**
-     * Método getter del origen de datos de los alumnos.
-     *
-     * @return Origen de datos requerido.
-     */
-    public AlumnoData getAlumnoData() {
-        return alumnoData;
-    }
-
-    /**
-     * Método getter del origen de datos de los apoderados.
-     *
-     * @return Origen de datos requerido.
-     */
-    public ApoderadoData getApoderadoData() {
-        return apoderadoData;
-    }
-
-    /**
-     * Método getter del origen de datos de los cursos.
-     *
-     * @return Origen de datos requerido.
-     */
-    public CursoData getCursoData() {
-        return cursoData;
-    }
-
-    /**
-     * Método getter del origen de datos de los profesores.
-     *
-     * @return Origen de datos requerido.
-     */
-    public ProfesorData getProfesorData() {
-        return profesorData;
-    }
 
     /**
      * Mapa con los menús a desplegar por pantalla. Cada menú contiene las opciones numéricas, un título y una breve
@@ -270,6 +209,67 @@ public class MenuCLI {
                 }
         });
     }};
+    private final BufferedReader lector;
+    private final MenuControllerCLI menuControllerCLI;
+    private final PersonaDAO<Alumno> alumnoData;
+    private final PersonaDAO<Apoderado> apoderadoData;
+    private final PersonaDAO<Profesor> profesorData;
+    private final DAO<Curso, IDCurso, ArrayList<Curso>> cursoData;
+
+    /**
+     * Objeto que controla los menús en la interfaz de linea de comandos.
+     *
+     * @param lector        BufferedReader lector de datos
+     * @param alumnoData    Origen de datos de los alumnos
+     * @param apoderadoData Origen de datos de los apoderados
+     * @param cursoData     Origen de datos de los cursos
+     * @param profesorData  Origen de datos de los profesores
+     */
+    public MenuCLI(BufferedReader lector, PersonaDAO<Alumno> alumnoData, PersonaDAO<Apoderado> apoderadoData, DAO<Curso,
+            IDCurso, ArrayList<Curso>> cursoData, PersonaDAO<Profesor> profesorData) {
+        this.lector = lector;
+        this.menuControllerCLI = new MenuControllerCLI(this);
+        this.alumnoData = alumnoData;
+        this.apoderadoData = apoderadoData;
+        this.cursoData = cursoData;
+        this.profesorData = profesorData;
+    }
+
+    /**
+     * Método getter del origen de datos de los alumnos.
+     *
+     * @return Origen de datos requerido.
+     */
+    public PersonaDAO<Alumno> getAlumnoData() {
+        return alumnoData;
+    }
+
+    /**
+     * Método getter del origen de datos de los apoderados.
+     *
+     * @return Origen de datos requerido.
+     */
+    public PersonaDAO<Apoderado> getApoderadoData() {
+        return apoderadoData;
+    }
+
+    /**
+     * Método getter del origen de datos de los cursos.
+     *
+     * @return Origen de datos requerido.
+     */
+    public DAO<Curso, IDCurso, ArrayList<Curso>> getCursoData() {
+        return cursoData;
+    }
+
+    /**
+     * Método getter del origen de datos de los profesores.
+     *
+     * @return Origen de datos requerido.
+     */
+    public PersonaDAO<Profesor> getProfesorData() {
+        return profesorData;
+    }
 
     /**
      * Método que se encarga de mostrar un menú por pantalla, leer la opción ingresada por el usuario y realizar las

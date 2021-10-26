@@ -1,7 +1,7 @@
 package aplicacion.controllers.cli;
 
-import aplicacion.views.cli.MenuCLI;
-import aplicacion.views.cli.UtilsCLI;
+import aplicacion.views.cli.menus.MenuCLI;
+import utils.UtilsCLI;
 
 import java.io.IOException;
 

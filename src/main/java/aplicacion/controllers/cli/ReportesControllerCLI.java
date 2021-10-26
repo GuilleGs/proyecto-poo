@@ -1,7 +1,7 @@
 package aplicacion.controllers.cli;
 
-import aplicacion.models.IDCurso;
-import aplicacion.views.cli.MenuCLI;
+import aplicacion.models.id.IDCurso;
+import aplicacion.views.cli.menus.MenuCLI;
 
 import java.io.IOException;
 

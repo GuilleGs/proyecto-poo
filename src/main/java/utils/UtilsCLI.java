@@ -1,4 +1,4 @@
-package aplicacion.views.cli;
+package utils;
 
 import aplicacion.models.Curso;
 import aplicacion.models.Persona;

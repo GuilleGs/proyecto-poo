@@ -1,5 +1,7 @@
 package aplicacion.models;
 
+import aplicacion.models.id.IDCurso;
+
 import java.util.HashMap;
 import java.util.Map;
 

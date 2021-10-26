@@ -3,10 +3,10 @@ package aplicacion.controllers.cli;
 import aplicacion.models.Alumno;
 import aplicacion.models.Apoderado;
 import aplicacion.models.Curso;
-import aplicacion.models.IDCurso;
+import aplicacion.models.id.IDCurso;
 import aplicacion.views.cli.AlumnoViewCLI;
-import aplicacion.views.cli.MenuCLI;
-import aplicacion.views.cli.UtilsCLI;
+import aplicacion.views.cli.menus.MenuCLI;
+import utils.UtilsCLI;
 
 import java.io.IOException;
 
@@ -89,16 +89,18 @@ public class AlumnoControllerCLI {
 
     public void agregarAlumno(CursoControllerCLI cursoController) throws IOException {
         IDCurso idCurso;
+        Alumno alumno;
+
         idCurso = cursoController.obtenerIDCurso();
-        this.menuCLI.getAlumnoData().insertAlumno(obtenerDatosAlumno(idCurso.nivel, idCurso.paralelo));
-        AlumnoViewCLI.mostrarTablaAlumnos(this.menuCLI.getAlumnoData().getAlumnos(idCurso.nivel, idCurso.paralelo),
-                Curso.cursoToString(idCurso.nivel, idCurso.paralelo));
+        alumno = obtenerDatosAlumno(idCurso.nivel, idCurso.paralelo);
+        this.menuCLI.getAlumnoData().insert(alumno);
+        UtilsCLI.imprimirPersona(alumno);
     }
 
     public void verAlumnos(CursoControllerCLI cursoController) throws IOException {
         IDCurso idCurso;
         idCurso = cursoController.obtenerIDCurso();
-        AlumnoViewCLI.mostrarTablaAlumnos(this.menuCLI.getAlumnoData().getAlumnos(idCurso.nivel, idCurso.paralelo),
+        AlumnoViewCLI.mostrarTablaAlumnos(this.menuCLI.getAlumnoData().getAll().get(),
                 Curso.cursoToString(idCurso.nivel, idCurso.paralelo));
     }
 
@@ -108,7 +110,7 @@ public class AlumnoControllerCLI {
 
         UtilsCLI.imprimirSolicitar("el RUT del alumno", "sin puntos, con guión");
         rut = this.menuCLI.getLector().readLine();
-        alumno = this.menuCLI.getAlumnoData().getAlumno(rut);
+        alumno = this.menuCLI.getAlumnoData().get(rut);
         if (alumno != null)
             UtilsCLI.imprimirPersona(alumno);
         else
@@ -121,17 +123,14 @@ public class AlumnoControllerCLI {
 
         UtilsCLI.imprimirSolicitar("el RUT del alumno", "sin puntos, con guión");
         rut = this.menuCLI.getLector().readLine();
-        alumno = this.menuCLI.getAlumnoData().getAlumno(rut);
+        alumno = this.menuCLI.getAlumnoData().get(rut);
         if (alumno == null) {
             UtilsCLI.mensajeErrIngresado();
             return;
         }
         System.out.println("Editando alumno:\n  Nombre: " + alumno.getNombreCompleto() + "\n  RUT: " + rut);
         alumnoEditado = obtenerDatosAlumno(alumno, alumno.getNivel(), alumno.getParalelo());
-        if (this.menuCLI.getAlumnoData().updateAlumno(alumnoEditado))
-            System.out.println("Alumno actualizado exitosamente.");
-        else
-            System.out.println("Ha ocurrido un error, por favor intente nuevamente.");
+        this.menuCLI.getAlumnoData().update(alumnoEditado, null);
     }
 
     public void eliminarAlumno() throws IOException {
@@ -140,16 +139,13 @@ public class AlumnoControllerCLI {
 
         UtilsCLI.imprimirSolicitar("el RUT del alumno", "sin puntos, con guión");
         rut = this.menuCLI.getLector().readLine();
-        alumno = this.menuCLI.getAlumnoData().getAlumno(rut);
+        alumno = this.menuCLI.getAlumnoData().get(rut);
         if (alumno == null) {
             UtilsCLI.mensajeErrIngresado();
             return;
         }
         System.out.println("Eliminando alumno:\n  Nombre: " + alumno.getNombreCompleto() + "\n  RUT: " + rut);
-        if (this.menuCLI.getAlumnoData().deleteAlumno(alumno))
-            System.out.println("Alumno eliminado exitosamente.");
-        else
-            System.out.println("Ha ocurrido un error, por favor intente nuevamente.");
+        this.menuCLI.getAlumnoData().delete(alumno);
     }
 
 }

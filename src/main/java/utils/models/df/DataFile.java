@@ -1,4 +1,4 @@
-package aplicacion.data.datafile;
+package utils.models.df;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.List;
  * @author Sebastián García, Guillermo González, Benjamín Navarrete
  * @version 2.0
  */
-public class Datafile {
+public class DataFile {
     private final File file;
     private final String type;
     private boolean fileExists;
@@ -20,7 +20,7 @@ public class Datafile {
     /**
      * @param type String con el tipo de archivo con el que se desea trabajar.
      */
-    public Datafile(String type) {
+    public DataFile(String type) {
         this.type = type;
         this.file = new File("datafiles/" + type + ".csv");
         if (!this.file.isFile()) {
